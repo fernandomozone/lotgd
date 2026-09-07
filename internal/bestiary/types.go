@@ -33,9 +33,9 @@ type AffixModifier struct {
 
 // AvailableAffixes contém a lista de afixos procedurais que podem ser sorteados aleatoriamente ao gerar um monstro.
 var AvailableAffixes = []AffixModifier{
-	{NamePTBR: "Feroz", HPMult: 1.1, ATKMult: 1.3, DEFMult: 1.0, XPMult: 1.3, GoldMult: 1.2},
+	{NamePTBR: "Feroz", HPMult: 1.1, ATKMult: 1.15, DEFMult: 1.0, XPMult: 1.3, GoldMult: 1.2},
 	{NamePTBR: "Covarde", HPMult: 0.8, ATKMult: 0.8, DEFMult: 0.9, XPMult: 0.8, GoldMult: 1.1},
-	{NamePTBR: "Enfurecido", HPMult: 1.2, ATKMult: 1.4, DEFMult: 0.8, XPMult: 1.4, GoldMult: 1.2},
+	{NamePTBR: "Enfurecido", HPMult: 1.2, ATKMult: 1.25, DEFMult: 0.8, XPMult: 1.4, GoldMult: 1.2},
 	{NamePTBR: "Sortudo", HPMult: 1.0, ATKMult: 1.0, DEFMult: 1.0, XPMult: 1.1, GoldMult: 2.5},
 	{NamePTBR: "Faminto", HPMult: 1.1, ATKMult: 1.2, DEFMult: 1.0, XPMult: 1.2, GoldMult: 1.0},
 	{NamePTBR: "Preguiçoso", HPMult: 1.2, ATKMult: 0.7, DEFMult: 1.2, XPMult: 0.9, GoldMult: 0.9},

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"lotgd/internal/bestiary"
+	"lotgd/internal/engine"
 	"lotgd/internal/i18n"
 )
 
@@ -32,6 +33,93 @@ func TestMonsterGenerator_PlayerScaling(t *testing.T) {
 	m := gen.GenerateForPlayer(10)
 	if m.Tier != 4 {
 		t.Fatalf("jogador de nível 10 deve enfrentar monstros de Tier 4, obtido Tier %d", m.Tier)
+	}
+}
+
+func TestMonsterGenerator_LevelOneNoTierTwo(t *testing.T) {
+	rng := rand.New(rand.NewSource(42))
+	gen := bestiary.NewMonsterGenerator(rng)
+
+	// Jogador de nível 1 nunca deve encontrar monstros de Tier 2
+	for i := 0; i < 1000; i++ {
+		m := gen.GenerateForPlayer(1)
+		if m.Tier != 1 {
+			t.Fatalf("jogador de nível 1 não deve encontrar monstro de Tier %d", m.Tier)
+		}
+	}
+}
+
+func TestLevelOneWinRateVsFerozMonsters(t *testing.T) {
+	rng := rand.New(rand.NewSource(2026))
+	ce := engine.NewCombatEngine(rng)
+
+	wins := 0
+	simulations := 1000
+
+	for i := 0; i < simulations; i++ {
+		// Jogador nível 1 padrão (ATK 6 = 5+1 stick, DEF 2 = 2+0 clothes, HP 20) com 1 poção inicial
+		p := &engine.Player{
+			Username:     "HeroLevel1",
+			Level:        1,
+			Health:       20,
+			MaxHealth:    20,
+			BaseAttack:   5,
+			BaseDefense:  2,
+			Weapon:       engine.WeaponsCatalog[0], // Stick (+1)
+			Armor:        engine.ArmorsCatalog[0],  // Clothes (+0)
+			PotionsCount: 1,
+		}
+
+		// Seleciona um monstro Tier 1 aleatório e aplica o afixo "Feroz"
+		monsterList := bestiary.TierMonstersLists[1]
+		chosenID := monsterList[rng.Intn(len(monsterList))]
+		tpl := bestiary.CanonicalTemplates[chosenID]
+
+		ferozAffix := bestiary.AffixModifier{
+			NamePTBR: "Feroz", HPMult: 1.1, ATKMult: 1.15, DEFMult: 1.0, XPMult: 1.3, GoldMult: 1.2,
+		}
+
+		hp := int(float64(tpl.BaseHP) * ferozAffix.HPMult)
+		atk := int(float64(tpl.BaseATK) * ferozAffix.ATKMult)
+		def := int(float64(tpl.BaseDEF) * ferozAffix.DEFMult)
+
+		m := &engine.Monster{
+			ID:        chosenID,
+			Name:      "Feroz " + i18n.GetMonsterName(chosenID),
+			Tier:      1,
+			Health:    hp,
+			MaxHealth: hp,
+			Attack:    atk,
+			Defense:   def,
+			Prefix:    "Feroz",
+		}
+
+		// Simula o combate até a vitória ou derrota
+		for p.IsAlive() && m.IsAlive() {
+			// Se o jogador estiver com vida crítica (<= 8 HP) e possuir poção, usa a poção
+			if p.Health <= 8 && p.PotionsCount > 0 {
+				_, err := ce.UsePotion(p)
+				if err == nil {
+					continue
+				}
+			}
+
+			res := ce.Attack(p, m)
+			if res.MonsterDefeated {
+				wins++
+				break
+			}
+			if res.PlayerDefeated {
+				break
+			}
+		}
+	}
+
+	winRate := float64(wins) / float64(simulations)
+	t.Logf("Taxa de vitória de jogador Nível 1 vs monstros Feroz do Tier 1: %.2f%% (%d/%d)", winRate*100, wins, simulations)
+
+	if winRate < 0.70 {
+		t.Fatalf("esperado taxa de vitória >= 70%%, obtido: %.2f%%", winRate*100)
 	}
 }
 

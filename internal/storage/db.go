@@ -138,7 +138,7 @@ func (d *DB) migrate() error {
 		defense INTEGER NOT NULL DEFAULT 2,
 		weapon_id TEXT NOT NULL DEFAULT 'stick',
 		armor_id TEXT NOT NULL DEFAULT 'clothes',
-		potions_count INTEGER NOT NULL DEFAULT 0,
+		potions_count INTEGER NOT NULL DEFAULT 1,
 		forest_fights INTEGER NOT NULL DEFAULT 15,
 		dragon_kills INTEGER NOT NULL DEFAULT 0,
 		last_login_day TEXT NOT NULL DEFAULT '',

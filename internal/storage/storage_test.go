@@ -26,7 +26,7 @@ func TestStorageWorkflow(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Register failed: %v", err)
 	}
-	if p.Username != "GopherHero" || p.Level != 1 || p.ForestFights != 15 {
+	if p.Username != "GopherHero" || p.Level != 1 || p.ForestFights != 15 || p.PotionsCount != 1 {
 		t.Errorf("Unexpected player defaults: %+v", p)
 	}
 

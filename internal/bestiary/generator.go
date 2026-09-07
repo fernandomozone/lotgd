@@ -28,7 +28,8 @@ func NewMonsterGenerator(rng *rand.Rand) *MonsterGenerator {
 // GenerateForPlayer seleciona e gera um monstro balanceado para o nível atual do herói.
 //
 // Regras de Distribuição por Tier:
-// - Níveis 1 a 2  -> Tier 1 (com 10% de chance de encontro desafiador em Tier 2)
+// - Nível 1       -> Tier 1 (estritamente sem encontros em Tier 2 para viabilidade inicial)
+// - Nível 2       -> Tier 1 (com 10% de chance de encontro desafiador em Tier 2)
 // - Níveis 3 a 4  -> Tier 2 (com 15% de chance de Tier 3)
 // - Níveis 5 a 7  -> Tier 3 (com 15% de chance de Tier 4)
 // - Níveis 8 a 10 -> Tier 4
@@ -39,7 +40,7 @@ func (mg *MonsterGenerator) GenerateForPlayer(playerLevel int) engine.Monster {
 	switch {
 	case playerLevel <= 2:
 		tier = 1
-		if roll < 0.10 {
+		if playerLevel > 1 && roll < 0.10 {
 			tier = 2
 		}
 	case playerLevel <= 4:
